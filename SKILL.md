@@ -114,6 +114,16 @@ Workflow({
 Codex or no-Workflow path: run the same phases manually with web search and/or subagents. Use the
 prompts and JSON schemas inside `assets/research_workflow.js` as the contract, then write:
 
+When subagents or parallel tool calls are available, fan the research out explicitly:
+
+- Discovery: one independent search per target region, then deduplicate programs.
+- Per program: run **facts**, **PIs**, and **career outcomes / international notes** as separate
+  parallel tasks.
+- Verification: after the first pass, run an independent adversarial check for stipend and
+  application-restriction claims before merging the record.
+- Merge only structured results that satisfy the schema; preserve "not found" rather than filling
+  gaps from guesswork.
+
 ```json
 {
   "field": "<field>",
