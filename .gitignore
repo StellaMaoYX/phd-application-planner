@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+# marimo runtime
+_marimo_run.log
+__marimo__/
+# generated per-run data (should not be committed)
+_config.json
+_research_data.json
+_rows.json
+_wf_result.json
+_pi_notes.json
+_pi_hidden.json
+phd_explorer.py
+out.html
