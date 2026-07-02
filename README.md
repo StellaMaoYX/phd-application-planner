@@ -57,7 +57,7 @@ Clone into your Claude Code skills directory:
 
 ```bash
 mkdir -p ~/.claude/skills
-git clone <REPO_URL> \
+git clone https://github.com/SihengTao/phd-application-planner \
   ~/.claude/skills/phd-application-planner
 ```
 
@@ -69,7 +69,7 @@ Clone into your Codex skills directory:
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-git clone <REPO_URL> \
+git clone https://github.com/SihengTao/phd-application-planner \
   "${CODEX_HOME:-$HOME/.codex}/skills/phd-application-planner"
 ```
 
@@ -223,7 +223,7 @@ Claude Code 可以使用仓库里的 `assets/research_workflow.js` Workflow 模�
 
 ```bash
 mkdir -p ~/.claude/skills
-git clone <REPO_URL> \
+git clone https://github.com/SihengTao/phd-application-planner \
   ~/.claude/skills/phd-application-planner
 ```
 
@@ -235,7 +235,7 @@ Claude Code 会自动发现 `~/.claude/skills/` 下的 skills。
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-git clone <REPO_URL> \
+git clone https://github.com/SihengTao/phd-application-planner \
   "${CODEX_HOME:-$HOME/.codex}/skills/phd-application-planner"
 ```
 
