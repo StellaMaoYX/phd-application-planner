@@ -15,7 +15,7 @@ export const meta = {
 }
 
 const cfg = args || {}
-const FIELD = cfg.field || 'computational biology'
+const FIELD = cfg.field || 'human-computer interaction'
 const SUBFIELDS = cfg.subfields || ''
 const REGIONS = cfg.regions || [{ key: 'US', label: 'United States' }]
 const FLOOR = cfg.stipend_floor || 35000
@@ -66,7 +66,9 @@ const FACTS_SCHEMA = {
     cohortSize: { type: 'string' }, degreeStructure: { type: 'string' },
     applicationRoute: { type: 'string' }, deadlineAndTests: { type: 'string' },
     applicationRestrictions: { type: 'string', description: 'CRITICAL: can the applicant apply to >1 program here per cycle? state clearly' },
-    researchFocus: { type: 'string' }, wetDryIntegration: { type: 'string' }, gwasOrMechanistic: { type: 'string' },
+    researchFocus: { type: 'string' },
+    systemsEmpiricalBalance: { type: 'string', description: 'balance of systems-building/engineering work (robots, prototypes, interaction techniques) vs empirical/user-study work (human-subjects experiments, field deployments) in this program' },
+    quantQualApproach: { type: 'string', description: 'balance of quantitative methods (controlled experiments, stats, log/sensor analysis) vs qualitative methods (interviews, ethnography, design research) in this program' },
     fitScore: { type: 'number', description: 'fit-for-applicant 0-10 (one decimal ok)' },
     fitRationale: { type: 'string' }, siblingPrograms: { type: 'string' },
     sources: { type: 'array', items: { type: 'string' } },
@@ -87,7 +89,7 @@ const PIS_SCHEMA = {
           rank: { type: 'string' }, hIndex: { type: 'number', description: 'Google Scholar h-index; -1 if not found' },
           citations: { type: 'number', description: 'total citations; -1 if not found' },
           scholarUrl: { type: 'string' }, startedApprox: { type: 'string', description: 'year lab started, e.g. "2021"' },
-          labSize: { type: 'string' }, wetDry: { type: 'string', description: 'dry | wet | both' },
+          labSize: { type: 'string' }, labFocus: { type: 'string', description: 'systems | empirical | both — does the lab primarily build systems/prototypes (interfaces, robots, toolkits), run human-subjects/user studies, or both' },
           research: { type: 'string' }, whyFit: { type: 'string' },
           recruiting: { type: 'string' }, url: { type: 'string' },
         },
@@ -136,7 +138,7 @@ const results = await pipeline(
   (c) => parallel([
     () => agent(`${WEB}\n\n${PROFILE}\n\nTASK: Full factual profile of the PhD program "${c.program}" at ${c.school} (${c.city || 'city?'}). Confirm current stipend (in ${CURRENCY}), whether it meets the ${FLOOR} floor, funding model, cohort size, application route + deadlines + tests, and CRITICALLY whether an applicant may apply to more than one program at this institution per cycle. Give a fitScore 0-10 for this applicant. Fill the schema.`,
       { label: `facts:${c.school}`, phase: 'Research', schema: FACTS_SCHEMA }),
-    () => agent(`${WEB}\n\n${PROFILE}\n\nTASK: Find ${N_PIS} PIs at/through "${c.program}" (${c.school}) who fit this applicant. ${PI_PREFS}. Categorize each as rising_star / direction_fit / interesting / famous_but_fits. For each include Google Scholar h-index + citations, lab start year, lab size, wet/dry, recruiting status, and a why-fit line.`,
+    () => agent(`${WEB}\n\n${PROFILE}\n\nTASK: Find ${N_PIS} PIs at/through "${c.program}" (${c.school}) who fit this applicant. ${PI_PREFS}. Categorize each as rising_star / direction_fit / interesting / famous_but_fits. For each include Google Scholar h-index + citations, lab start year, lab size, lab focus (systems-building vs empirical/user-study vs both), recruiting status, and a why-fit line.`,
       { label: `pis:${c.school}`, phase: 'Research', schema: PIS_SCHEMA }),
     () => agent(`${WEB}\n\n${PROFILE}\n\nTASK: Career outcomes (academia/industry, named examples if findable), typical admit backgrounds, and international-student funding/CPT notes for "${c.program}" at ${c.school}. Be honest about what is/isn't published.`,
       { label: `out:${c.school}`, phase: 'Research', schema: OUT_SCHEMA }),

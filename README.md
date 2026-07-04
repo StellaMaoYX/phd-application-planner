@@ -22,7 +22,7 @@ A single-page marimo app with:
   rows; click **x** on any row to hide it and restore later
 - **Program detail cards**: stipend with verification basis, cohort, deadlines, application
   restrictions, career outcomes, international-student notes
-- **PI browser**: filter by category / wet-dry / region / min-h-index / keyword; per-row
+- **PI browser**: filter by category / lab focus (systems vs empirical) / region / min-h-index / keyword; per-row
   hide; editable notes per advisor that persist across restarts; Google Scholar links
 - **Weighted priority ranker**: 5 sliders plus interest picks, live re-ranking
 - **Cost-of-living-adjusted real stipend** chart
@@ -189,7 +189,7 @@ subagent，它会并行调研，然后交付一个可以筛选、做笔记、隐
 - **项目浏览器**：按地区、匹配度、stipend、申请 hedging 过滤；可以隐藏/恢复单行
 - **项目详情卡**：stipend 及验证依据、cohort、deadline、申请限制、career outcome、
   国际学生相关备注
-- **PI 浏览器**：按类别、wet/dry、地区、最低 h-index、关键词过滤；可以隐藏 PI；可以给每个
+- **PI 浏览器**：按类别、系统/实证方向、地区、最低 h-index、关键词过滤；可以隐藏 PI；可以给每个
   PI 写持久化笔记；带 Google Scholar 链接
 - **加权优先级排序器**：5 个滑块加兴趣方向选择，实时重新排序
 - **生活成本调整后的实际 stipend** 图

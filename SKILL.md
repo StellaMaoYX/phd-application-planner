@@ -54,7 +54,7 @@ questions. Collect (see `reference/intake.md` for the full question bank + optio
 2. **Regions / countries** — where they'll apply (and any "partial" regions). Capture a short label + color per region.
 3. **Funding** — the hard minimum stipend floor + currency (a firm filter).
 4. **Scope** — roughly how many programs, and how many fitting PIs per program.
-5. **PI preferences** — rising-star vs established, lab size (small/young vs large), wet/dry balance, specific methods/topics, mechanism-vs-descriptive leanings.
+5. **PI preferences** — rising-star vs established, lab size (small/young vs large), systems-building/engineering vs empirical/user-study balance, specific methods/topics, quantitative-vs-qualitative leanings.
 6. **Rising-star bias** — how strongly to favor junior/rising PIs over famous ones.
 7. **Application constraints they care about** — e.g. can-apply-to-multiple-programs hedging, deadlines.
 8. **Lifestyle / other** — city-size preference, international-student concerns, academia-vs-industry outcome interest.
@@ -83,9 +83,9 @@ From the intake answers, write `<out>/_config.json`. Fields the dashboard reads:
 ```
 
 - **`interest_areas`** — YOU generate this: 6–10 buckets of lowercase keyword substrings that
-  auto-tag each PI's research by subfield **for the user's field** (e.g. for immunology:
-  "T-cell", "innate immunity", "autoimmunity"…). These power the interest heatmap + priority
-  ranker. If unsure, omit and a broad default is used.
+  auto-tag each PI's research by subfield **for the user's field** (e.g. for HRI:
+  "teleoperation", "trust calibration", "social robotics"…). These power the interest heatmap +
+  priority ranker. If unsure, omit and a broad default is used.
 - **`regions`** — one entry per region the user chose (assign distinct colors; `short` is the
   badge label). `region_order` sets sort order.
 - **`col_index`** — optional cost-of-living index by lowercase city substring (avg=100); enables
@@ -171,7 +171,7 @@ matplotlib scipy scikit-learn` if needed). The dashboard reads the JSON from its
 
 KPIs · ⭐ top-fit picks · 🔎 **program browser** (region/fit/stipend/hedge filters, aligned
 table rows, per-row ✕ to hide + restore) · 🏫 program detail cards · 🔬 **PI browser**
-(category/wet-dry/region/min-h/keyword filters, per-row ✕ hide, **editable persistent notes
+(category/lab-focus/region/min-h/keyword filters, per-row ✕ hide, **editable persistent notes
 per PI**, Scholar links) · 🎯 **weighted priority ranker** (5 sliders + interest picks) · 💰
 cost-of-living-adjusted real stipend · 📊 **statistics** (Spearman, Kruskal–Wallis, Pareto
 frontier, K-means clustering + PCA) with stats-based recommendations. Notes/hidden lists

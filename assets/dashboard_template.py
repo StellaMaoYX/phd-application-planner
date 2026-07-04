@@ -345,7 +345,7 @@ def _(cfg, pd, re, research, rows, statistics):
                     "citations": (_ci if isinstance(_ci, (int, float)) and _ci >= 0 else None),
                     "scholar_url": _p.get("scholarUrl") or "", "started": _p.get("startedApprox") or "",
                     "years_active": (_CY - int(_m.group(1))) if _m else None, "lab_size": _p.get("labSize") or "",
-                    "wet_dry": _p.get("wetDry") or "", "research": _p.get("research") or "", "why_fit": _p.get("whyFit") or "",
+                    "lab_focus": _p.get("labFocus") or "", "research": _p.get("research") or "", "why_fit": _p.get("whyFit") or "",
                     "recruiting": _p.get("recruiting") or "", "url": _p.get("url") or "", "is_new": bool(_p.get("_new")),
                     "interests": ", ".join(sorted(_hits)),
                 })
@@ -369,7 +369,7 @@ def _(cfg, pd, re, research, rows, statistics):
                 "best_pi_h": (_best.get("hIndex") if _best and isinstance(_best.get("hIndex"), (int, float)) and _best.get("hIndex") >= 0 else None),
                 "cohort": _f.get("cohortSize") or "", "structure": _f.get("degreeStructure") or "", "route": _f.get("applicationRoute") or "",
                 "deadline_tests": _f.get("deadlineAndTests") or "", "app_restrictions": _f.get("applicationRestrictions") or "",
-                "focus": _f.get("researchFocus") or "", "wet_dry": _f.get("wetDryIntegration") or "", "gwas_mech": _f.get("gwasOrMechanistic") or "",
+                "focus": _f.get("researchFocus") or "", "systems_empirical": _f.get("systemsEmpiricalBalance") or "", "quant_qual": _f.get("quantQualApproach") or "",
                 "fit_rationale": _f.get("fitRationale") or "", "sibling": _f.get("siblingPrograms") or "", "careers": _o.get("careerOutcomes") or "",
                 "admit_bg": _o.get("admitBackgrounds") or "", "intl": _o.get("intlNotes") or "",
                 "stipend_verified": _o.get("stipendVerified") or _f.get("stipend_whichIsRight") or "",
@@ -584,33 +584,33 @@ def _(REGION_COLORS, badge, fit_color, mo, pd, pis_df, programs_df, program_pick
         {_rw("Stipend 核实", f"来源 {_found} · 置信度 {_r.stipend_conf or '—'} · {_r.stipend_basis or ''}")}
         {_rw("申请路径", _r.route)}{_rw("Cohort/录取", _r.cohort)}
         {_rw("⚠️ 申请限制", _r.app_restrictions)}{_rw("截止/考试", _r.deadline_tests)}
-        {_rw("研究方向", _r.focus)}{_rw("干湿结合", _r.wet_dry)}{_rw("GWAS vs 机理", _r.gwas_mech)}
+        {_rw("研究方向", _r.focus)}{_rw("系统/实证", _r.systems_empirical)}{_rw("量化 vs 质化", _r.quant_qual)}
         {_rw("同校其他可投", _r.sibling)}{_rw("Fit 理由", _r.fit_rationale)}
         {_rw("出路", _r.careers)}{_rw("录取背景", _r.admit_bg)}{_rw("国际生", _r.intl)}{_rw("其他情报", _r.extra)}
       </table></div>"""
     _pdf = pis_df[pis_df.program == program_picker.value].copy().sort_values("h_index", ascending=False, na_position="last")
-    _pidisp = _pdf[["name", "category", "h_index", "citations", "interests", "rank", "lab_size", "wet_dry", "why_fit", "url"]]
+    _pidisp = _pdf[["name", "category", "h_index", "citations", "interests", "rank", "lab_size", "lab_focus", "why_fit", "url"]]
     mo.vstack([mo.Html(_card), mo.md("##### 🎯 目标 PI（按 h-index 降序）"), mo.ui.table(_pidisp, page_size=12, selection=None)])
     return
 
 
 @app.cell
 def _(mo, section):
-    mo.Html(section("Faculty", "🔬 PI 浏览器", "全部目标 PI，可按类型 / 干湿 / 地区 / 最低 h-index / 关键词检索；含自动兴趣标签、建组年数、Scholar 链接。", "faculty"))
+    mo.Html(section("Faculty", "🔬 PI 浏览器", "全部目标 PI，可按类型 / 系统-实证 / 地区 / 最低 h-index / 关键词检索；含自动兴趣标签、建组年数、Scholar 链接。", "faculty"))
     return
 
 
 @app.cell
 def _(mo, pis_df):
     _cats = sorted(pis_df.category.unique().tolist())
-    _wds = sorted(pis_df.wet_dry.unique().tolist())
+    _focuses = sorted(pis_df.lab_focus.unique().tolist())
     _regs = sorted(pis_df.region.unique().tolist())
     _hmax = int(pis_df.h_index.max()) if pis_df.h_index.notna().any() else 100
     pi_cat = mo.ui.multiselect(options=_cats, value=_cats, label="类型")
-    pi_wd = mo.ui.multiselect(options=_wds, value=_wds, label="干/湿")
+    pi_wd = mo.ui.multiselect(options=_focuses, value=_focuses, label="系统/实证")
     pi_reg = mo.ui.multiselect(options=_regs, value=_regs, label="地区")
     pi_minh = mo.ui.slider(0, _hmax, value=0, step=5, label="最低 h-index", show_value=True)
-    pi_search = mo.ui.text(placeholder="'T cell' / 'transcription factor' / 'stem' …", label="搜索", full_width=True)
+    pi_search = mo.ui.text(placeholder="'trust calibration' / 'teleoperation' / 'shared autonomy' …", label="搜索", full_width=True)
     mo.vstack([mo.hstack([pi_cat, pi_wd, pi_reg, pi_minh], justify="start", gap=2),
                mo.hstack([pi_search], justify="start", gap=2)])
     return pi_cat, pi_minh, pi_reg, pi_search, pi_wd
@@ -619,7 +619,7 @@ def _(mo, pis_df):
 @app.cell
 def _(get_hidden, pi_cat, pi_minh, pi_reg, pi_search, pi_wd, pis_df):
     _df = pis_df[pis_df.category.isin(pi_cat.value)].copy()
-    _df = _df[_df.wet_dry.isin(pi_wd.value)]
+    _df = _df[_df.lab_focus.isin(pi_wd.value)]
     _df = _df[_df.region.isin(pi_reg.value)]
     if pi_minh.value > 0:
         _df = _df[_df.h_index.fillna(-1) >= pi_minh.value]

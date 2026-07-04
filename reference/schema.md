@@ -6,7 +6,7 @@ files the marimo app reads.
 ## `_wf_result.json` — research workflow output
 ```json
 {
-  "field": "Computational biology",
+  "field": "Human-Computer Interaction",
   "regions": [{"key": "US", "label": "United States"}],
   "floor": 35000,
   "currency": "USD",
@@ -36,7 +36,7 @@ The marimo app (`dashboard_template.py`) reads three files from its own folder.
 {
   "<School Name>": [
     {
-      "program": "Computational Biology PhD",
+      "program": "Human-Computer Interaction PhD",
       "facts": { ...FACTS... },
       "pis": { "pis": [ { ...PI... }, ... ] },
       "out": { ...OUTCOMES... }
@@ -48,13 +48,14 @@ The marimo app (`dashboard_template.py`) reads three files from its own folder.
 ### FACTS (per program)
 `city, stipendUSD (number), stipendLocal, stipend_basis, stipend_confidence,
 stipend_foundOfficial (bool), stipendNotes, meetsFloor (bool), cohortSize, degreeStructure,
-applicationRoute, deadlineAndTests, applicationRestrictions, researchFocus, wetDryIntegration,
-gwasOrMechanistic, fitScore (number 0-10), fitRationale, siblingPrograms, sources (array)`
+applicationRoute, deadlineAndTests, applicationRestrictions, researchFocus,
+systemsEmpiricalBalance, quantQualApproach, fitScore (number 0-10), fitRationale,
+siblingPrograms, sources (array)`
 
 ### PI (per faculty)
 `name, category (rising_star|direction_fit|interesting|famous_but_fits), rank, hIndex (number
-or null), citations (number or null), scholarUrl, startedApprox ("2021"), labSize, wetDry
-(dry|wet|both), research, whyFit, recruiting, url`.
+or null), citations (number or null), scholarUrl, startedApprox ("2021"), labSize, labFocus
+(systems|empirical|both), research, whyFit, recruiting, url`.
 `category` drives colors/labels; `rising_star`+`direction_fit` count as "fitting PIs".
 Use `null` (not -1) for missing hIndex/citations — `build_data.py` normalizes -1 → null.
 
