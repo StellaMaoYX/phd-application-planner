@@ -307,13 +307,13 @@ def _(cfg, pd, re, research, rows, statistics):
             return 3
         return 2
 
-    _rbp = {r["program"]: r for r in rows}
+    _rbp = {(r["school"], r["program"]): r for r in rows}
     _prog_rec, _pi_rec, _ia_rec = [], [], []
     for _school, _recs in research.items():
         for _rec in _recs:
             _prog = _rec["program"]; _f = _rec.get("facts", {}) or {}; _o = _rec.get("out", {}) or {}
             _pis = (_rec.get("pis", {}) or {}).get("pis", []) or []
-            _rr = _rbp.get(_prog, {})
+            _rr = _rbp.get((_school, _prog), {})
             _usd = _rr.get("usd") if _rr.get("usd") is not None else _f.get("stipendUSD")
             _usd = _usd if isinstance(_usd, (int, float)) else None
             _city = _rr.get("city") or _f.get("city") or ""
@@ -548,7 +548,7 @@ def _(get_hidden, mo, show_prog):
 @app.cell
 def _(mo, programs_df):
     _pf = programs_df.sort_values(["region_ord", "fit"], ascending=[True, False])
-    _opts = {f"[{r.region}] {r.school} — {r.program[:48]}  (fit {r.fit})": r.program for r in _pf.itertuples()}
+    _opts = {f"[{r.region}] {r.school} — {r.program[:48]}  (fit {r.fit})": f"{r.school}||{r.program}" for r in _pf.itertuples()}
     program_picker = mo.ui.dropdown(options=_opts, value=list(_opts.keys())[0], label="选项目看详情卡")
     mo.vstack([mo.md("### 🏫 项目详情卡"), program_picker])
     return (program_picker,)
@@ -556,7 +556,8 @@ def _(mo, programs_df):
 
 @app.cell
 def _(REGION_COLORS, badge, fit_color, mo, pd, pis_df, programs_df, program_picker):
-    _r = programs_df[programs_df.program == program_picker.value].iloc[0]
+    _sel_school, _sel_prog = program_picker.value.split("||", 1)
+    _r = programs_df[(programs_df.school == _sel_school) & (programs_df.program == _sel_prog)].iloc[0]
     _usd = int(_r.stipend_usd) if pd.notna(_r.stipend_usd) and _r.stipend_usd >= 0 else None
     _rc = REGION_COLORS.get(_r.region, "#777")
     _b = (badge(f"Fit {_r.fit}/10", fit_color(_r.fit), False)
@@ -580,7 +581,7 @@ def _(REGION_COLORS, badge, fit_color, mo, pd, pis_df, programs_df, program_pick
         {_rw("同校其他可投", _r.sibling)}{_rw("Fit 理由", _r.fit_rationale)}
         {_rw("出路", _r.careers)}{_rw("录取背景", _r.admit_bg)}{_rw("国际生", _r.intl)}{_rw("其他情报", _r.extra)}
       </table></div>"""
-    _pdf = pis_df[pis_df.program == program_picker.value].copy().sort_values("h_index", ascending=False, na_position="last")
+    _pdf = pis_df[(pis_df.school == _sel_school) & (pis_df.program == _sel_prog)].copy().sort_values("h_index", ascending=False, na_position="last")
     _pidisp = _pdf[["name", "category", "h_index", "citations", "interests", "rank", "lab_size", "lab_focus", "why_fit", "url"]]
     mo.vstack([mo.Html(_card), mo.md("##### 🎯 目标 PI（按 h-index 降序）"), mo.ui.table(_pidisp, page_size=12, selection=None)])
     return
@@ -766,9 +767,9 @@ def _(FLOOR, REGION_COLORS, mo, plt, pri_floor, pri_interests, prog_ia, programs
     _d = programs_df.copy()
     if pri_floor.value:
         _d = _d[_d.meets_floor]
-    _ia = prog_ia.set_index("program")
+    _ia = prog_ia.assign(_key=prog_ia.school + "||" + prog_ia.program).set_index("_key")
     _sel = list(pri_interests.value) or list(prog_ia.columns[4:])
-    _d["intscore"] = _d.program.map(_ia[_sel].sum(axis=1)).fillna(0)
+    _d["intscore"] = (_d.school + "||" + _d.program).map(_ia[_sel].sum(axis=1)).fillna(0)
     _ws = max(1e-9, w_fit.value + w_stip.value + w_city.value + w_pi.value + w_int.value)
     _fitn = (_d.fit.fillna(0) / 10).clip(0, 1)
     _stipn = ((_d.stipend_usd.fillna(0) - FLOOR) / 25000).clip(0, 1).where(_d.meets_floor, 0)
