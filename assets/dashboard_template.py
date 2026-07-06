@@ -277,28 +277,20 @@ def _(load_hidden, mo, write_hidden):
 @app.cell
 def _(cfg, pd, re, research, rows, statistics):
     _CY = cfg.get("current_year", 2026)
-    # Interest-tag taxonomy — generated per research field during intake; falls back to a broad default.
-    INTEREST_AREAS = cfg.get("interest_areas") or {
-        "Immuno/T-cell": ["immun", "t cell", "t-cell", "lymphocyte", " tcr", "antigen", "cd8", "cd4", "thymus", "cytokine"],
-        "StemCell/Dev": ["stem cell", "regenerat", "develop", "organoid", "ipsc", "pluripoten", "differentiat", "lineage", "morphogen", "hematopoiet"],
-        "Neuro": ["neuro", "brain", "neuron", "synap", "cortex", "glia", "axon", "behavi"],
-        "ML/DL": ["machine learning", "deep learning", "neural net", "foundation model", " ai ", "transformer", "predictive model", "deep-learning", "language model", "ai-"],
-        "Cancer": ["cancer", "tumor", "tumour", "oncolog", "leukemia", "glioma", "carcinoma", "metasta", "melanoma"],
-        "GeneReg/TF": ["transcription factor", "gene regulat", "regulatory", "chromatin", "enhancer", "epigen", "3d genome", "cis-regul", "gene-regulatory", "atac", "grn"],
-        "SingleCell": ["single-cell", "single cell", "scrna", "scatac", "multiome", "spatial transcriptom", "perturb-seq"],
-        "Aging": ["aging", "ageing", "senescen", "longevity"],
-    }
+    # Interest-tag taxonomy — generated per research field during intake (see reference/intake.md).
+    # No field-specific fallback here: an empty default keeps the dashboard correct for any field
+    # instead of silently mislabeling PIs with another field's keyword buckets.
+    INTEREST_AREAS = cfg.get("interest_areas") or {}
     # Cost-of-living index by city (US-avg=100) — extend via config for other geographies.
     _COL = cfg.get("col_index") or {
-        "new york": 187, "san francisco": 178, "berkeley": 178, "la jolla": 146, "san diego": 146,
+        "new york": 187, "san francisco": 178, "berkeley": 178, "san diego": 146,
         "boston": 162, "cambridge, ma": 162, "pasadena": 150, "los angeles": 150, "seattle": 155,
         "chicago": 119, "evanston": 119, "philadelphia": 108, "pittsburgh": 95, "houston": 96,
-        "memphis": 86, "baltimore": 110, "new haven": 120, "princeton": 135, "durham": 102,
-        "ithaca": 100, "cold spring harbor": 140, "bar harbor": 105, "farmington": 110}
+        "baltimore": 110, "new haven": 120, "princeton": 135, "durham": 102, "ithaca": 100}
     _URBAN3 = cfg.get("urban3") or ["new york", "san francisco", "berkeley", "boston", "cambridge, ma", "los angeles", "pasadena",
-               "chicago", "seattle", "san diego", "la jolla", "houston", "washington", "philadelphia",
+               "chicago", "seattle", "san diego", "houston", "washington", "philadelphia",
                "berlin", "london", "paris", "stockholm", "hong kong", "zurich", "basel", "singapore", "toronto", "tokyo"]
-    _URBAN1 = cfg.get("urban1") or ["princeton", "ithaca", "cold spring harbor", "bar harbor", "farmington", "klosterneuburg", "hinxton"]
+    _URBAN1 = cfg.get("urban1") or ["princeton", "ithaca"]
 
     def _col_idx(city):
         c = (city or "").lower()
@@ -755,15 +747,15 @@ def _(mo, section):
 
 
 @app.cell
-def _(INTEREST_AREAS, mo):
+def _(FLOOR, INTEREST_AREAS, mo):
     w_fit = mo.ui.slider(0, 100, value=40, step=5, label="① 契合度", show_value=True)
     w_stip = mo.ui.slider(0, 100, value=20, step=5, label="② Stipend", show_value=True)
     w_city = mo.ui.slider(0, 100, value=15, step=5, label="③ 城市", show_value=True)
     w_pi = mo.ui.slider(0, 100, value=15, step=5, label="④ rising/契合 PI 密度", show_value=True)
     w_int = mo.ui.slider(0, 100, value=10, step=5, label="⑤ 兴趣覆盖", show_value=True)
-    pri_interests = mo.ui.multiselect(options=list(INTEREST_AREAS.keys()),
-                                      value=["Immuno/T-cell", "StemCell/Dev", "GeneReg/TF", "ML/DL", "Neuro"], label="你看重的兴趣方向")
-    pri_floor = mo.ui.checkbox(value=True, label="排除低于 $35k 的项目")
+    _ia_keys = list(INTEREST_AREAS.keys())
+    pri_interests = mo.ui.multiselect(options=_ia_keys, value=_ia_keys[:5], label="你看重的兴趣方向")
+    pri_floor = mo.ui.checkbox(value=True, label=f"排除低于 ${FLOOR:,} 的项目")
     mo.vstack([mo.hstack([w_fit, w_stip, w_city], justify="start", gap=2),
                mo.hstack([w_pi, w_int, pri_floor], justify="start", gap=2), pri_interests])
     return pri_floor, pri_interests, w_city, w_fit, w_int, w_pi, w_stip
